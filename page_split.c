@@ -1,4 +1,4 @@
-#include <stdbool.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -45,6 +45,10 @@ char *read_line(FILE *fptr) {
 int main(int argc, char *argv[]) {
   // TODO at some point, take in output directory and have multiple output files
   // in that dir
+
+  const char *open_tag = "<page>";
+  const char *close_tag = "</page>";
+
   if (argc < 3) {
     printf("Usage: page_split <filename> <output path>");
     return 1;
@@ -53,28 +57,42 @@ int main(int argc, char *argv[]) {
 
   FILE *fptrin, *fptrout;
   char *line;
-  char *opentag = NULL;
-  int linecount = 0;
+  char *output_start = NULL;
+  char *output_end = NULL;
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
 
   // find first <page> tag
-  while (!opentag) {
+  while (!output_start) {
     line = read_line(fptrin);
     if (!line) {
       return -1;
     }
-    opentag = strstr(line, "<page>");
-    linecount++;
-    printf("beginnning: %s, line: %i\n", opentag, linecount);
+    output_start = strstr(line, open_tag);
   };
-  int c;
-  // TODO stop adding to output file after encountering </page> tag.
-  fputs(line, fptrout);
+
+  fputs(output_start, fptrout);
   fputs("\n", fptrout);
-  while ((c = fgetc(fptrin)) != -1) {
-    fputc(c, fptrout);
+
+  while (!output_end) {
+    line = read_line(fptrin);
+    if (!line) {
+      return -1;
+    }
+    output_end = strstr(line, close_tag);
+    if (!output_end) {
+      fputs(line, fptrout);
+      // manually add \n due to read_line removing it
+      fputs("\n", fptrout);
+    }
   }
+  size_t length = (output_end - line) + strlen(close_tag);
+  char temp[length + 1];
+  memcpy(temp, line, length);
+  temp[length] = '\0';
+  fputs(temp, fptrout);
+  fputs("\n", fptrout);
+
   fclose(fptrin);
   fclose(fptrout);
   return 0;
