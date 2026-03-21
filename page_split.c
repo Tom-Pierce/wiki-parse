@@ -53,20 +53,20 @@ int main(int argc, char *argv[]) {
 
   FILE *fptrin, *fptrout;
   char *line;
-  char *beginning = NULL;
+  char *opentag = NULL;
   int linecount = 0;
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
 
   // find first <page> tag
-  while (!beginning) {
+  while (!opentag) {
     line = read_line(fptrin);
     if (!line) {
       return -1;
     }
-    beginning = strstr(line, "<page>");
+    opentag = strstr(line, "<page>");
     linecount++;
-    printf("beginnning: %s, line: %i\n", beginning, linecount);
+    printf("beginnning: %s, line: %i\n", opentag, linecount);
   };
   int c;
   // TODO stop adding to output file after encountering </page> tag.
