@@ -39,6 +39,9 @@ char *read_line(FILE *fptr) {
       }
     }
   }
+  if (read_chars > 0) {
+    return line;
+  }
   return NULL;
 }
 
