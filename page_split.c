@@ -90,6 +90,9 @@ int main(int argc, char *argv[]) {
         in_page = 0;
         size_t length = (output_end - line) + strlen(close_tag);
         char *temp = malloc(length + 1);
+        if(!temp){
+          return 1;
+        }
         memcpy(temp, line, length);
         temp[length] = '\0';
         fputs(temp, fptrout);
