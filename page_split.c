@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// returns the next line of a file pointer
+// returns the next line of a file pointer. strips \n so it must be handled by
+// the caller
 char *read_line(FILE *fptr) {
   int buf_size = 512;
   char *line;
@@ -59,8 +60,17 @@ int main(int argc, char *argv[]) {
   char *output_start = NULL;
   char *output_end = NULL;
   int in_page = 0;
+
   fptrin = fopen(argv[1], "r");
+  if (!fptrin) {
+    perror(argv[1]);
+    return 1;
+  }
   fptrout = fopen(argv[2], "w");
+  if (!fptrout) {
+    perror(argv[2]);
+    return 1;
+  }
 
   while ((line = read_line(fptrin)) != NULL) {
     if (!in_page) {
