@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// returns the next line of a file pointer
 char *read_line(FILE *fptr) {
   int buf_size = 512;
   char *line;
@@ -20,11 +21,13 @@ char *read_line(FILE *fptr) {
   while (fgets(buf, buf_size - read_chars, fptr)) {
     read_chars = strlen(line);
 
+    // return line if fgets reached a \n
     if (line[read_chars - 1] == '\n') {
       line[read_chars - 1] = '\0';
       return (line);
       free(line);
     } else {
+      // realloc to read more of the string
       buf_size = buf_size * 2;
       tmp = realloc(line, buf_size);
       if (tmp) {
@@ -40,7 +43,7 @@ char *read_line(FILE *fptr) {
 }
 
 int main(int argc, char *argv[]) {
-
+//TODO at some point, take in output directory and have multiple output files in that dir
   if (argc < 3) {
     printf("Usage: page_split <filename> <output path>");
     return 1;
@@ -53,7 +56,8 @@ int main(int argc, char *argv[]) {
   int linecount = 0;
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
-
+  
+  // find first <page> tag
   while (!beginning) {
     line = read_line(fptrin);
     if (!line) {
@@ -64,6 +68,7 @@ int main(int argc, char *argv[]) {
     printf("beginnning: %s, line: %i\n", beginning, linecount);
   };
   int c;
+  //TODO stop adding to output file after encountering </page> tag.
   while((c = fgetc(fptrin)) != -1){
     fputc(c, fptrout);
   }
