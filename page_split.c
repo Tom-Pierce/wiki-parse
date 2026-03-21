@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
   }
   fptrout = fopen(argv[2], "w");
   if (!fptrout) {
+    fclose(fptrin);
     perror(argv[2]);
     return 1;
   }
