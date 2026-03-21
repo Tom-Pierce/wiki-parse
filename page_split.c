@@ -25,7 +25,6 @@ char *read_line(FILE *fptr) {
     if (line[read_chars - 1] == '\n') {
       line[read_chars - 1] = '\0';
       return (line);
-      free(line);
     } else {
       // realloc to read more of the string
       buf_size = buf_size * 2;
@@ -59,40 +58,35 @@ int main(int argc, char *argv[]) {
   char *line;
   char *output_start = NULL;
   char *output_end = NULL;
+  int in_page = 0;
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
 
-  // find first <page> tag
-  while (!output_start) {
-    line = read_line(fptrin);
-    if (!line) {
-      return -1;
+  while ((line = read_line(fptrin)) != NULL) {
+    if (!in_page) {
+      output_start = strstr(line, open_tag);
+      if (output_start) {
+        fputs(output_start, fptrout);
+        fputs("\n", fptrout);
+        in_page = 1;
+      }
+    } else {
+      output_end = strstr(line, close_tag);
+      if (output_end) {
+        in_page = 0;
+        size_t length = (output_end - line) + strlen(close_tag);
+        char temp[length + 1];
+        memcpy(temp, line, length);
+        temp[length] = '\0';
+        fputs(temp, fptrout);
+        fputs("\n", fptrout);
+      } else {
+        fputs(line, fptrout);
+        fputs("\n", fptrout);
+      }
     }
-    output_start = strstr(line, open_tag);
-  };
-
-  fputs(output_start, fptrout);
-  fputs("\n", fptrout);
-
-  while (!output_end) {
-    line = read_line(fptrin);
-    if (!line) {
-      return -1;
-    }
-    output_end = strstr(line, close_tag);
-    if (!output_end) {
-      fputs(line, fptrout);
-      // manually add \n due to read_line removing it
-      fputs("\n", fptrout);
-    }
+    free(line);
   }
-  size_t length = (output_end - line) + strlen(close_tag);
-  char temp[length + 1];
-  memcpy(temp, line, length);
-  temp[length] = '\0';
-  fputs(temp, fptrout);
-  fputs("\n", fptrout);
-
   fclose(fptrin);
   fclose(fptrout);
   return 0;
