@@ -78,6 +78,7 @@ int main(int argc, char *argv[]) {
 
   while ((line = read_line(fptrin)) != NULL) {
     if (!in_page) {
+      // search for first open tag
       output_start = strstr(line, open_tag);
       if (output_start) {
         fputs(output_start, fptrout);
@@ -85,12 +86,16 @@ int main(int argc, char *argv[]) {
         in_page = 1;
       }
     } else {
+      // when in a page print search for close tag
       output_end = strstr(line, close_tag);
       if (output_end) {
+        // if close tag found make sure to only print up to the close tag and
+        // nothing past it on the same line
         in_page = 0;
+        // get length between start of line and the end of the close tag
         size_t length = (output_end - line) + strlen(close_tag);
         char *temp = malloc(length + 1);
-        if(!temp){
+        if (!temp) {
           return 1;
         }
         memcpy(temp, line, length);
@@ -99,6 +104,7 @@ int main(int argc, char *argv[]) {
         free(temp);
         fputs("\n", fptrout);
       } else {
+        // add current line to output file
         fputs(line, fptrout);
         fputs("\n", fptrout);
       }
