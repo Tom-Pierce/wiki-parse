@@ -43,7 +43,8 @@ char *read_line(FILE *fptr) {
 }
 
 int main(int argc, char *argv[]) {
-//TODO at some point, take in output directory and have multiple output files in that dir
+  // TODO at some point, take in output directory and have multiple output files
+  // in that dir
   if (argc < 3) {
     printf("Usage: page_split <filename> <output path>");
     return 1;
@@ -56,7 +57,7 @@ int main(int argc, char *argv[]) {
   int linecount = 0;
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
-  
+
   // find first <page> tag
   while (!beginning) {
     line = read_line(fptrin);
@@ -68,8 +69,10 @@ int main(int argc, char *argv[]) {
     printf("beginnning: %s, line: %i\n", beginning, linecount);
   };
   int c;
-  //TODO stop adding to output file after encountering </page> tag.
-  while((c = fgetc(fptrin)) != -1){
+  // TODO stop adding to output file after encountering </page> tag.
+  fputs(line, fptrout);
+  fputs("\n", fptrout);
+  while ((c = fgetc(fptrin)) != -1) {
     fputc(c, fptrout);
   }
   fclose(fptrin);
