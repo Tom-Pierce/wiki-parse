@@ -115,10 +115,13 @@ int main(int argc, char *argv[]) {
     }
     free(line);
   }
-  if (in_page){
-    printf("warning: no close tag on last entry\n");
+  if (in_page) {
+    printf("last file has no closing tag: %s - deleting file\n", path);
+    fclose(fptrout);
+    remove(path);
+  } else {
+    fclose(fptrout);
   }
   fclose(fptrin);
-  fclose(fptrout);
   return 0;
 }
