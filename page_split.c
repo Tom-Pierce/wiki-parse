@@ -53,7 +53,7 @@ int main(int argc, char *argv[]) {
   const char *close_tag = "</page>";
 
   if (argc < 3) {
-    printf("Usage: page_split <filename> <output path>");
+    printf("Usage: page_split <filename> <output directory>");
     return 1;
   }
   printf("splitting %s, saving in %s\n", argv[1], argv[2]);
@@ -63,16 +63,13 @@ int main(int argc, char *argv[]) {
   char *output_start = NULL;
   char *output_end = NULL;
   int in_page = 0;
+  char path[512];
+
+  snprintf(path, sizeof(path), "%s/%s", argv[2], "dynamic_ouput1.txt");
 
   fptrin = fopen(argv[1], "r");
   if (!fptrin) {
     perror(argv[1]);
-    return 1;
-  }
-  fptrout = fopen(argv[2], "w");
-  if (!fptrout) {
-    fclose(fptrin);
-    perror(argv[2]);
     return 1;
   }
 
@@ -81,6 +78,12 @@ int main(int argc, char *argv[]) {
       // search for first open tag
       output_start = strstr(line, open_tag);
       if (output_start) {
+        fptrout = fopen(path, "w");
+        if (!fptrout) {
+          fclose(fptrin);
+          perror(argv[2]);
+          return 1;
+        }
         fputs(output_start, fptrout);
         fputs("\n", fptrout);
         in_page = 1;
