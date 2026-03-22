@@ -45,6 +45,12 @@ char *read_line(FILE *fptr) {
   return NULL;
 }
 
+void close_file(FILE *fptr, char *path) {
+  if (fclose(fptr) != 0) {
+    printf("error closing file %s\n", path);
+  }
+}
+
 int main(int argc, char *argv[]) {
 
   const char *open_tag = "<page>";
@@ -105,7 +111,7 @@ int main(int argc, char *argv[]) {
         fputs(temp, fptrout);
         free(temp);
         fputs("\n", fptrout);
-        fclose(fptrout);
+        close_file(fptrout, path);
         page_count++;
       } else {
         // add current line to output file
@@ -117,11 +123,11 @@ int main(int argc, char *argv[]) {
   }
   if (in_page) {
     printf("last file has no closing tag: %s - deleting file\n", path);
-    fclose(fptrout);
+    close_file(fptrout, path);
     remove(path);
   } else {
-    fclose(fptrout);
+    close_file(fptrout, path);
   }
-  fclose(fptrin);
+  close_file(fptrin, argv[1]);
   return 0;
 }
