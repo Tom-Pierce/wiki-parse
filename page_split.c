@@ -115,6 +115,9 @@ int main(int argc, char *argv[]) {
     }
     free(line);
   }
+  if (in_page){
+    printf("warning: no close tag on last entry\n");
+  }
   fclose(fptrin);
   fclose(fptrout);
   return 0;
