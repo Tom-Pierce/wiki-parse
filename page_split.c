@@ -46,8 +46,6 @@ char *read_line(FILE *fptr) {
 }
 
 int main(int argc, char *argv[]) {
-  // TODO at some point, take in output directory and have multiple output files
-  // in that dir
 
   const char *open_tag = "<page>";
   const char *close_tag = "</page>";
@@ -64,8 +62,7 @@ int main(int argc, char *argv[]) {
   char *output_end = NULL;
   int in_page = 0;
   char path[512];
-
-  snprintf(path, sizeof(path), "%s/%s", argv[2], "dynamic_ouput1.txt");
+  int page_count = 1;
 
   fptrin = fopen(argv[1], "r");
   if (!fptrin) {
@@ -78,6 +75,8 @@ int main(int argc, char *argv[]) {
       // search for first open tag
       output_start = strstr(line, open_tag);
       if (output_start) {
+        path[0] = '\0';
+        snprintf(path, sizeof(path), "%s/%i%s", argv[2], page_count, ".txt");
         fptrout = fopen(path, "w");
         if (!fptrout) {
           fclose(fptrin);
@@ -106,6 +105,8 @@ int main(int argc, char *argv[]) {
         fputs(temp, fptrout);
         free(temp);
         fputs("\n", fptrout);
+        fclose(fptrout);
+        page_count++;
       } else {
         // add current line to output file
         fputs(line, fptrout);
