@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "read_line.h"
+#include "file_utils.h"
 
 void close_file(FILE *fptr, char *path) {
   if (fclose(fptr) != 0) {
