@@ -4,12 +4,6 @@
 #include <string.h>
 #include "file_utils.h"
 
-void close_file(FILE *fptr, char *path) {
-  if (fclose(fptr) != 0) {
-    printf("error closing file %s\n", path);
-  }
-}
-
 int main(int argc, char *argv[]) {
 
   const char *open_tag = "<page>";

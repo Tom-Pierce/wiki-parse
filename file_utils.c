@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 // returns the next line of a file pointer. strips \n so it must be handled by
 // the caller
 char *read_line(FILE *fptr) {
@@ -43,4 +44,8 @@ char *read_line(FILE *fptr) {
   return NULL;
 }
 
-
+void close_file(FILE *fptr, char *path) {
+  if (fclose(fptr) != 0) {
+    printf("error closing file %s\n", path);
+  }
+}
