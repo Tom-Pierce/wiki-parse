@@ -32,8 +32,9 @@ int main(int argc, char *argv[]) {
       printf("page title: %s\n", title);
       close_file(fptr, argv[1]);
       remove_illegal_chars(title);
-      rename(argv[1], title);
-      perror("help");
+      if((rename(argv[1], title)) != 0){
+        perror("file renaming error");
+      }
       free(temp);
     }
   }
