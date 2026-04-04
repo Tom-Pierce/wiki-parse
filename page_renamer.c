@@ -31,6 +31,7 @@ int main(int argc, char *argv[]) {
       title = temp + strlen(open_tag);
       printf("page title: %s\n", title);
       close_file(fptr, argv[1]);
+      remove_illegal_chars(title);
       rename(argv[1], title);
       perror("help");
       free(temp);
