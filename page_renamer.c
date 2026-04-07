@@ -38,5 +38,6 @@ int main(int argc, char *argv[]) {
       free(temp);
     }
   }
+  free(line);
   return 0;
 }
