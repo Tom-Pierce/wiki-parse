@@ -34,3 +34,11 @@ void remove_illegal_chars(char *str) {
     remove_char(str, invalid_chars[i]);
   }
 }
+
+void str_append(char *str, int max, char c) {
+  int len = strlen(str);
+  if (len + 1 < max) {
+    str[len] = c;
+    str[len + 1] = '\0';
+  }
+}

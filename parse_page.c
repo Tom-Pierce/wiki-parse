@@ -1,16 +1,11 @@
+#include "string_utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 
-void appendStr(char *str, int max, char c){
-  int len = strlen(str);
-  if(len + 1 < max){
-    str[len] = c;
-    str[len + 1] = '\0';
-  } 
-}
+// TODO only take links from within the <text> tags, might be able to reuse the
+// page_split functions
 
 int main(int argc, char *argv[]) {
 
@@ -25,32 +20,34 @@ int main(int argc, char *argv[]) {
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
 
-  if (fptrin == NULL) {
-    printf("terminating, file could not be found\n");
-    return 0;
-  } else {
-    while ((c = fgetc(fptrin)) != -1) {
-      // at double [
-      if (c == 91 && prevChar == 91) {
-        if (atLink) {
-          buf[0] = '\0';
-        }
-        appendStr(buf, sizeof(buf), c);
-        atLink = true;
-        // at double ]
-      } else if (c == 93 && prevChar == 93 && atLink) {
-        atLink = false;
-        appendStr(buf, sizeof(buf), c);
-        appendStr(buf, sizeof(buf), '\n');
-        fputs(buf, fptrout);
-        buf[0] = '\0';
-
-      }
+  if (!fptrin) {
+    perror(argv[1]);
+    return 1;
+  }
+  if (!fptrout) {
+    perror(argv[2]);
+    return 1;
+  }
+  while ((c = fgetc(fptrin)) != -1) {
+    // at double [
+    if (c == 91 && prevChar == 91) {
       if (atLink) {
-        appendStr(buf, sizeof(buf), c);
+        buf[0] = '\0';
       }
-      prevChar = c;
+      str_append(buf, sizeof(buf), c);
+      atLink = true;
+      // at double ]
+    } else if (c == 93 && prevChar == 93 && atLink) {
+      atLink = false;
+      str_append(buf, sizeof(buf), c);
+      str_append(buf, sizeof(buf), '\n');
+      fputs(buf, fptrout);
+      buf[0] = '\0';
     }
+    if (atLink) {
+      str_append(buf, sizeof(buf), c);
+    }
+    prevChar = c;
   }
 
   fclose(fptrin);
