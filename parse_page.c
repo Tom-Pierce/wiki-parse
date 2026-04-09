@@ -1,21 +1,20 @@
+#include "file_utils.h"
 #include "string_utils.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// TODO only take links from within the <text> tags, might be able to reuse the
-// page_split functions
-
 int main(int argc, char *argv[]) {
 
   printf("input file: %s\n", argv[1]);
 
   FILE *fptrin, *fptrout;
-  int c;
-  char prevChar;
+  char *line;
   char buf[1000];
-  bool atLink = false;
+  char *tag = NULL;
+  bool inLink = false;
+  bool inText = false;
 
   fptrin = fopen(argv[1], "r");
   fptrout = fopen(argv[2], "w");
@@ -28,28 +27,46 @@ int main(int argc, char *argv[]) {
     perror(argv[2]);
     return 1;
   }
-  while ((c = fgetc(fptrin)) != -1) {
-    // at double [
-    if (c == 91 && prevChar == 91) {
-      if (atLink) {
+  while ((line = read_line(fptrin)) != NULL) {
+    tag = NULL;
+    // only take links within text tag
+    if (!inText && strstr(line, "<text ") != NULL) {
+      inText = true;
+    }
+    if (inText && (tag = strstr(line, "</text>")) != NULL) {
+      // prevents taking links after text close tag on the same line
+      tag[0] = '\0';
+    }
+    if (!inText) {
+      continue;
+    }
+    int len = strlen(line);
+    for (int i = 0; i < len; i++) {
+      // search for open link
+      if (line[i] == '[' && line[i + 1] == '[') {
+        inLink = true;
         buf[0] = '\0';
       }
-      str_append(buf, sizeof(buf), c);
-      atLink = true;
-      // at double ]
-    } else if (c == 93 && prevChar == 93 && atLink) {
-      atLink = false;
-      str_append(buf, sizeof(buf), c);
-      str_append(buf, sizeof(buf), '\n');
-      fputs(buf, fptrout);
-      buf[0] = '\0';
+      // search for close link
+      if (line[i] == ']' && line[i + 1] == ']' && inLink) {
+        inLink = false;
+        str_append(buf, sizeof(buf), line[i]);
+        str_append(buf, sizeof(buf), line[i + 1]);
+        str_append(buf, sizeof(buf), '\n');
+        fputs(buf, fptrout);
+        buf[0] = '\0';
+      }
+      if (inLink) {
+        str_append(buf, sizeof(buf), line[i]);
+      }
     }
-    if (atLink) {
-      str_append(buf, sizeof(buf), c);
+    // if a close text tag was found above set inText to false
+    if (tag != NULL) {
+      inText = false;
+      tag = NULL;
     }
-    prevChar = c;
+    free(line);
   }
-
   fclose(fptrin);
   fclose(fptrout);
   return 0;
