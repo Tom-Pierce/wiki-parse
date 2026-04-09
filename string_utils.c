@@ -35,9 +35,9 @@ void remove_illegal_chars(char *str) {
   }
 }
 
-void str_append(char *str, int max, char c) {
+void str_append(char *str, int capacity, char c) {
   int len = strlen(str);
-  if (len + 1 < max) {
+  if (len + 1 < capacity) {
     str[len] = c;
     str[len + 1] = '\0';
   }
