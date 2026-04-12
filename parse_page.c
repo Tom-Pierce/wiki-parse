@@ -60,7 +60,8 @@ int main(int argc, char *argv[]) {
         str_append(buf, sizeof(buf), line[i]);
       }
     }
-    // if a close text tag was found above set inText to false
+    // if a close text tag was found above set inText to false. this is to allow
+    // text before the close tag on the same line to be read
     if (tag != NULL) {
       inText = false;
       tag = NULL;
